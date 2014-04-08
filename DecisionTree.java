@@ -16,9 +16,13 @@ public class DecisionTree {
 	Node buildTree(Node root, ArrayList<Sample> samples, int depth) {
 		double trainEntr = findEntropy(samples);
 		//if train is size one, then stop, we reached a leaf!
-		if ((samples.size() <= 10)||(trainEntr<.2)||(depth>200)) {
+		if ((samples.size() <= 20) || (trainEntr < .2) || (depth > 50)) {
+			//System.out.println("at leaf at depth: " + depth + ", entropy: " + trainEntr);
+			//System.out.println("sample #: " + samples.size());
+			
 			root.setIsLeaf(true);
 			root.setSpam(spamOrNot(samples));
+			//System.out.println("class: " + spamOrNot(samples));
 			return root;
 		}
 		
@@ -153,7 +157,7 @@ public class DecisionTree {
 				one++;
 			}
 		}
-		if (one > zero) {
+		if (one >= zero) {
 			return 1;
 		} else {
 			return 0;
