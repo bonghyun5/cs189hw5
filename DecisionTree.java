@@ -271,7 +271,7 @@ public class DecisionTree {
 				one++;
 			}
 		}
-		if (one > zero) {
+		if (one >= zero) {
 			return 1;
 		} else {
 			return 0;

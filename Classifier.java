@@ -1,5 +1,6 @@
 package hw5;
 
+
 import java.util.*;
 
 public class Classifier {
@@ -15,7 +16,10 @@ public class Classifier {
 	}
 	
 	static void initialize() {
-		allSamples = Parser.parse("/Users/bonghyunkim/Desktop/Xtrain.txt", "/Users/bonghyunkim/Desktop/Ytrain.txt");
+		//allSamples = Parser.parse("/Users/bonghyunkim/Desktop/Xtrain.txt", "/Users/bonghyunkim/Desktop/Ytrain.txt");
+		allSamples = Parser.parse("/Users/yuanshizhan/Documents/George/cs189/hw5/cs189hw5/Xtrain.txt",
+				"/Users/yuanshizhan/Documents/George/cs189/hw5/cs189hw5/Ytrain.txt");
+		//System.out.println("code");
 	}
 	
 	static void crossValicationDecisionTree(ArrayList<Sample> allSamples) {
@@ -93,7 +97,6 @@ public class Classifier {
 				}
 			}
 		}
-		
 	}
 	
 	
@@ -104,7 +107,7 @@ public class Classifier {
 				wrongClassification ++;
 			}
 		}
-		return (double) wrongClassification / samples.size();
+ 		return (double) wrongClassification / samples.size();
 	}
 	
 	private static double getAvgErrorRate(ArrayList<Double> errorRates) {
