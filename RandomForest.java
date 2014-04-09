@@ -6,12 +6,12 @@ public class RandomForest {
 
 	DecisionTree[] decisionTrees;
 	
-	RandomForest(int numSamples, int numTrees, ArrayList<Sample> samples) {
+	RandomForest(ArrayList<Sample> samples, int numTrees, double numSubSampleRatio, double numFeaturesRatio) {
 		decisionTrees = new DecisionTree[numTrees];
 		for (int i = 0; i < numTrees; i++) {
 			Collections.sort(samples);
-			ArrayList<Sample> subSamples = getSubSamples(samples, numSamples);
-			DecisionTree decisionTree = new DecisionTree(subSamples);
+			ArrayList<Sample> subSamples = getSubSamples(samples, numSubSampleRatio);
+			DecisionTree decisionTree = new DecisionTree(subSamples, 10, 0.2, 3, numFeaturesRatio);
 			decisionTrees[i] = decisionTree;
 		}
 	}
@@ -19,7 +19,6 @@ public class RandomForest {
 	void classifyAll(ArrayList<Sample> samples) {
 		for (Sample sample : samples) {
 			int classified = classify(sample);
-			System.out.println(classified);
 			sample.setPredictedSpam(classified);
 		}
 	}
@@ -33,9 +32,10 @@ public class RandomForest {
 		return majorVoting(predicted);
 	}
 	
-	private ArrayList<Sample> getSubSamples(ArrayList<Sample> samples, int numSamples) {
+	private ArrayList<Sample> getSubSamples(ArrayList<Sample> samples, double numSubSampleRatio) {
 		Collections.sort(samples);
 		ArrayList<Sample> subSamples = new ArrayList<Sample>();
+		int numSamples = (int) (samples.size() * numSubSampleRatio);
 		for (int i = 0; i < numSamples; i++) {
 			subSamples.add(samples.get(i));
 		}
