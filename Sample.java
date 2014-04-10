@@ -1,18 +1,21 @@
 package hw5;
 
-
 import java.util.*;
 
+/*
+ * Class representing sample data.
+ */
 public class Sample implements Comparable<Sample> {
 	
-	//list of attributes
+	//List of attributes
 	private ArrayList<Double> attr;
 	//1 if spam, 0 if not
 	private int spam;
-	//sort index needed when iterating through, sorting based on which attribute we're looking at
+	//Sort index needed when iterating through, sorting based on which attribute we're looking at
 	private int sortIndex;
-	
+	//1 if spam, 0 if not
 	private int predictedSpam;
+	private double weight;
 	
 	public Sample(ArrayList<Double> attr) {
 		this.attr = attr;
@@ -29,32 +32,40 @@ public class Sample implements Comparable<Sample> {
 		}
 	}
 	
-	public void setSpam(int i) {
+	void setSpam(int i) {
 		this.spam = i;
 	}
-	public int getSpam() {
+	
+	int getSpam() {
 		return spam;
 	}
-	public ArrayList<Double> getAttr() {
+	
+	ArrayList<Double> getAttr() {
 		return attr;
 	}
-	public void setSortIndex(int i) {
+	
+	void setSortIndex(int i) {
 		sortIndex = i;
 	}
 	
-	public void setPredictedSpam(int i) {
+	void setPredictedSpam(int i) {
 		this.predictedSpam = i;
 	}
 	
-	public int getPredictedSpam() {
+	int getPredictedSpam() {
 		return this.predictedSpam;
+	}
+	
+	void setWeight(double weight) {
+		this.weight = weight;
+	}
+	
+	double getWeight() {
+		return this.weight;
 	}
 	
 	public String toString() {
 		return attr.toString() + " y: " + spam + "\n";
-		
 	}
-
+	
 }
-
-

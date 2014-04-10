@@ -4,17 +4,15 @@ import java.util.*;
 
 public class DecisionTree {
 	
-	private static ArrayList<Sample> allSamples;
 	Node root;
 	private final int TOTAL_NUM_FEATURES = 57;
 	
 	DecisionTree(ArrayList<Sample> allSamples, int leafSize, double trainThreshold, int depthThreshold, double numFeaturesRatio) {
 		root = buildTree(new Node(), allSamples, 0, leafSize, trainThreshold, depthThreshold, numFeaturesRatio);
-		//root = buildTreeC45(new Node(), 0, allSamples, trainThreshold, depthThreshold);
 	}
 	
-	//iterates through all attributes, and determines information gain for each split
-	//choose attr and split which provides max information gain
+	//Iterates through all attributes, and determines information gain for each split
+	//Choose attr and split which provides max information gain
 	Node buildTree(Node root, ArrayList<Sample> samples, int depth, int leafSize, double trainThreshold, int depthThreshold, double numFeaturesRatio) {
 		double trainEntr = findEntropy(samples);
 		//if train is size one, then stop, we reached a leaf!
@@ -99,7 +97,6 @@ public class DecisionTree {
 				}	
 			}
 		}
-		
 		root.setAttr(maxAttr);
 		root.setSplit(maxAttrSplit);
 		Node leftChild = new Node();
@@ -110,96 +107,6 @@ public class DecisionTree {
 		rightChild.setParent(root);
 		return root;
 	}
-	
-	
-	Node buildTreeC45(Node root, int depth, ArrayList<Sample> samples, double infoGainThreshold, int depthThreshold) {
-		//Check BaseCase
-		int allSameClass = allSameClass(samples);
-		if (allSameClass == 0 || allSameClass == 1) {
-			root.setIsLeaf(true);
-			root.setSpam(allSameClass);
-			return root;
-		}
-		double infoGainNow = findEntropy(samples);
-		if (infoGainNow <= infoGainThreshold || depth > depthThreshold) {
-			root.setIsLeaf(true);
-			root.setSpam(spamOrNot(samples));
-			return root;
-		}
-		
-		double bestNormInfoGain = 0.0;
-		int bestAttrNum = 0;
-		double bestAttrSplit = 0.0;
-
-		//For Each attribute a
-		for (int attrNum = 0; attrNum < TOTAL_NUM_FEATURES; attrNum++) {
-			//Get Best Split and split data
-			double attrSplit = findAttrSplit(samples, attrNum);
-			ArrayList<Sample>[] splitSamples = splitSamples(samples, attrNum, attrSplit);
-			ArrayList<Sample> leftOnAttr = splitSamples[0];
-			ArrayList<Sample> rightOnAttr = splitSamples[1];
-			
-			//Find normalized information gain ratio from this split
-			double normInfoGain = getNormInfoGainOnSplit(leftOnAttr, rightOnAttr);
-			if (normInfoGain > bestNormInfoGain) {
-				bestNormInfoGain = normInfoGain;
-				bestAttrNum = attrNum;
-				bestAttrSplit = attrSplit;
-			}
-		}
-		
-		root.setAttr(bestAttrNum);
-		root.setSplit(bestAttrSplit);
-		ArrayList<Sample> leftOnBestAttr = new ArrayList<Sample>();
-		ArrayList<Sample> rightOnBestAttr = new ArrayList<Sample>();
-		Node leftChild = new Node();
-		Node rightChild = new Node();
-		leftChild.setParent(root);
-		rightChild.setParent(root);
-		root.setLeftChild(buildTreeC45(leftChild, depth + 1, leftOnBestAttr, infoGainThreshold, depthThreshold));
-		root.setRightChild(buildTreeC45(rightChild, depth + 1, rightOnBestAttr, infoGainThreshold, depthThreshold));
-
-		return root;
-	}	
-	
-	double findAttrSplit(ArrayList<Sample> samples, int attrNum) {
-		double attrSplit = 0.0;
-		for (int i = 0; i < 1; i ++) {
-			for (Sample sample : samples) {
-				double attr = sample.getAttr().get(attrNum);
-				int actualClass = sample.getSpam();
-				int predictedClass = (attrSplit * attr > 0) ? 1 : 0;
-				if (predictedClass != actualClass) {
-					if (predictedClass == 1) {
-						attrSplit = attrSplit + attr; 
-					} else {
-						attrSplit = attrSplit - attr;
-					}
-				} 
-			}
-		}
-		return attrSplit;
-	}
-	
-	ArrayList<Sample>[] splitSamples(ArrayList<Sample> samples, int attrNum, double attrSplit) {
-		ArrayList<Sample> left = new ArrayList<Sample>();
-		ArrayList<Sample> right = new ArrayList<Sample>();
-		for (Sample sample : samples) {
-			 double attr = sample.getAttr().get(attrNum);
-			 if (attr <= attrSplit) {
-				 left.add(sample);
-			 } else {
-				 right.add(sample);
-			 }
-		}
-		ArrayList<Sample>[] splitSamples = new ArrayList[2];
-		splitSamples[0] = left;
-		splitSamples[1] = right;
-		return splitSamples;
-	}
-	
-	
-	
 	
 	void classifyAll(ArrayList<Sample> samples) {
 		for (Sample sample : samples) {
@@ -235,12 +142,12 @@ public class DecisionTree {
 	 * @param in
 	 * @return the value of entropy for this set of vectors
 	 */
-	protected static double findEntropy(ArrayList<Sample> in) {
+	private double findEntropy(ArrayList<Sample> in) {
 		double prob = findProb(in);
 		return -1.0*(prob*(log2(prob)) + (1-prob)*log2(1-prob));
 	}
 	
-	private static double log2(double in) {
+	private double log2(double in) {
 		if (in==0.0) {
 			return 0.0;
 		} else {
@@ -253,7 +160,7 @@ public class DecisionTree {
 	 * @param in takes in list of points
 	 * @return the probability of spam given these points
 	 */
-	private static double findProb(ArrayList<Sample> in) {
+	private double findProb(ArrayList<Sample> in) {
 		int y = 0;
 		for (int i = 0; i< in.size(); i++) {
 			y += in.get(i).getSpam();
@@ -309,6 +216,93 @@ public class DecisionTree {
 			}
 			return subFeatures;
 		}
+	}
+	
+	Node buildTreeC45(Node root, int depth, ArrayList<Sample> samples, double infoGainThreshold, int depthThreshold) {
+		//Check BaseCase
+		int allSameClass = allSameClass(samples);
+		if (allSameClass == 0 || allSameClass == 1) {
+			root.setIsLeaf(true);
+			root.setSpam(allSameClass);
+			return root;
+		}
+		double infoGainNow = findEntropy(samples);
+		if (infoGainNow <= infoGainThreshold || depth > depthThreshold) {
+			root.setIsLeaf(true);
+			root.setSpam(spamOrNot(samples));
+			return root;
+		}
+		
+		double bestNormInfoGain = 0.0;
+		int bestAttrNum = 0;
+		double bestAttrSplit = 0.0;
+
+		//For Each attribute a
+		for (int attrNum = 0; attrNum < TOTAL_NUM_FEATURES; attrNum++) {
+			//Get Best Split and split data
+			double attrSplit = findAttrSplit(samples, attrNum);
+			ArrayList<Sample>[] splitSamples = splitSamples(samples, attrNum, attrSplit);
+			ArrayList<Sample> leftOnAttr = splitSamples[0];
+			ArrayList<Sample> rightOnAttr = splitSamples[1];
+			
+			//Find normalized information gain ratio from this split
+			double normInfoGain = getNormInfoGainOnSplit(leftOnAttr, rightOnAttr);
+			if (normInfoGain > bestNormInfoGain) {
+				bestNormInfoGain = normInfoGain;
+				bestAttrNum = attrNum;
+				bestAttrSplit = attrSplit;
+			}
+		}
+		
+		root.setAttr(bestAttrNum);
+		root.setSplit(bestAttrSplit);
+		ArrayList<Sample> leftOnBestAttr = new ArrayList<Sample>();
+		ArrayList<Sample> rightOnBestAttr = new ArrayList<Sample>();
+		Node leftChild = new Node();
+		Node rightChild = new Node();
+		leftChild.setParent(root);
+		rightChild.setParent(root);
+		root.setLeftChild(buildTreeC45(leftChild, depth + 1, leftOnBestAttr, infoGainThreshold, depthThreshold));
+		root.setRightChild(buildTreeC45(rightChild, depth + 1, rightOnBestAttr, infoGainThreshold, depthThreshold));
+
+		return root;
+	}
+	
+		
+	double findAttrSplit(ArrayList<Sample> samples, int attrNum) {
+		double attrSplit = 0.0;
+		for (int i = 0; i < 1; i ++) {
+			for (Sample sample : samples) {
+				double attr = sample.getAttr().get(attrNum);
+				int actualClass = sample.getSpam();
+				int predictedClass = (attrSplit * attr > 0) ? 1 : 0;
+				if (predictedClass != actualClass) {
+					if (predictedClass == 1) {
+						attrSplit = attrSplit + attr; 
+					} else {
+						attrSplit = attrSplit - attr;
+					}
+				} 
+			}
+		}
+		return attrSplit;
+	}
+	
+	ArrayList<Sample>[] splitSamples(ArrayList<Sample> samples, int attrNum, double attrSplit) {
+		ArrayList<Sample> left = new ArrayList<Sample>();
+		ArrayList<Sample> right = new ArrayList<Sample>();
+		for (Sample sample : samples) {
+			 double attr = sample.getAttr().get(attrNum);
+			 if (attr <= attrSplit) {
+				 left.add(sample);
+			 } else {
+				 right.add(sample);
+			 }
+		}
+		ArrayList<Sample>[] splitSamples = new ArrayList[2];
+		splitSamples[0] = left;
+		splitSamples[1] = right;
+		return splitSamples;
 	}
 	
 }

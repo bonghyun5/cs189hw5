@@ -1,29 +1,22 @@
 package hw5;
 
-import java.util.*;
-
-public class Node {
-	
-	//which attr to split at
+/*
+ * Class representing nodes for Decision Tree Algorithm
+ */
+public class Node {	
 	private int attr;
-	//what value to split at in attr
-	private double split;
-	
+	private double split;	
 	private int spam;
-	
 	private Node parent;
 	private Node leftChild;
 	private Node rightChild;
-	private boolean isLeaf;
-	private int depth;
-	
+	private boolean isLeaf;	
 	
 	public Node() {
 		parent = null;
 		leftChild = null;
 		rightChild = null;
 		isLeaf = false;
-		depth = 0;
 	}
 	
 	void setAttr(int attr) {

@@ -2,6 +2,9 @@ package hw5;
 
 import java.util.*;
 
+/*
+ * Class for building RandomForest and classifying samples with them
+ */
 public class RandomForest {
 
 	DecisionTree[] decisionTrees;
@@ -11,7 +14,7 @@ public class RandomForest {
 		for (int i = 0; i < numTrees; i++) {
 			Collections.sort(samples);
 			ArrayList<Sample> subSamples = getSubSamples(samples, numSubSampleRatio);
-			DecisionTree decisionTree = new DecisionTree(subSamples, 10, 0.2, 3, numFeaturesRatio);
+			DecisionTree decisionTree = new DecisionTree(subSamples, Classifier.DT_OPTIMAL_LEAF_SIZE, Classifier.DT_OPTIMAL_TRAIN_ENTR, Classifier.DT_OPTIMAL_DEPTH, numFeaturesRatio);
 			decisionTrees[i] = decisionTree;
 		}
 	}

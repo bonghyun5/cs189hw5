@@ -1,13 +1,46 @@
 package hw5;
 
-
 import java.io.*;
 import java.util.*;
 
+/*
+ * Class to parse the data file in to ArrayList of Samples 
+ */
 public class Parser {
+	
+	/*
+	 * Returns an ArrayList of ArrayLists containing all the training data without spam value
+	 */
+	protected static ArrayList<Sample> parse(String fileLocation) {
+		BufferedReader br = null;
+		ArrayList<Sample> samples = new ArrayList<Sample>();
 
-	/**
-	 * Returns an ArrayList of ArrayLists containing all the training data
+		try {
+			String sCurrentLine;
+			br = new BufferedReader(new FileReader(fileLocation));
+			while ((sCurrentLine = br.readLine()) != null) {
+				String[] arr = sCurrentLine.split(",");
+				ArrayList<Double> pt = new ArrayList<Double>();
+				for (int i = 0; i < arr.length; i++) {
+					pt.add(Double.parseDouble(arr[i]));
+				}
+				Sample s = new Sample(pt);
+				samples.add(s);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null)br.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		return samples;
+	}
+	
+	/*
+	 * Returns an ArrayList of ArrayLists containing all the training data with actual spam value
 	 */
 	protected static ArrayList<Sample> parse(String xFileLocation, String yFileLocation) {
 		BufferedReader br = null;
@@ -36,8 +69,6 @@ public class Parser {
 				train.get(i).setSpam(Integer.parseInt(sCurrentLine));
 				i++;
 			}
-			
- 
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
